@@ -1,7 +1,8 @@
 require 'helper'
 
-class TestStatsmix < Test::Unit::TestCase
-  should "probably rename this file and start testing for real" do
-    flunk "hey buddy, you should probably rename this file and start testing for real"
+class TestStatsmix < Test::Unit::TestCase  
+  should "initialize StatsMix API" do
+    # statsmix = StatsMix.new('api_key', 'xml')
+    # statsmix.list_metrics(11, 3)
   end
 end

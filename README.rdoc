@@ -1,6 +1,6 @@
 = statsmix
 
-Description goes here.
+A Ruby wrapper for the StatsMix API - http://www.statsmix.com/developers
 
 == Contributing to statsmix
  
@@ -14,6 +14,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 tmarkiewicz. See LICENSE.txt for
-further details.
-
+Copyright (c) 2011 StatsMix, Inc. See LICENSE.txt for further details.
