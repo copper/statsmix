@@ -13,7 +13,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "statsmix"
-  gem.homepage = "http://github.com/statsmix/statsmix"
+  gem.homepage = "http://github.com/tmarkiewicz/statsmix"
   gem.license = "MIT"
   gem.summary = %Q{A Ruby gem for the StatsMix API.}
   gem.description = %Q{A Ruby gem for the StatsMix API - http://www.statsmix.com/developers}
