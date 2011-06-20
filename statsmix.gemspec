@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
     "test/helper.rb",
     "test/test_statsmix.rb"
   ]
-  s.homepage = %q{http://github.com/statsmix/statsmix}
+  s.homepage = %q{http://github.com/tmarkiewicz/statsmix}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
