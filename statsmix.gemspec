@@ -25,7 +25,6 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "lib/statsmix.rb",
-    "statsmix-0.0.3.gem",
     "statsmix.gemspec",
     "test/helper.rb",
     "test/test_statsmix.rb"
