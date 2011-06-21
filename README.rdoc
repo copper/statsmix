@@ -4,6 +4,9 @@ A Ruby gem for the StatsMix API - http://www.statsmix.com/developers
 
 WARNING: This is currently experimental and not recommend for production use.
 
+StatsMix makes it easy to track, chart, and share application and business metrics.
+
+To get started with the gem, you'll need a API key. You can get a free developer account here: http://www.statsmix.com/try?plan=developer
 
 == Contributing to statsmix
  
