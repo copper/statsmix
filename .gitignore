@@ -13,6 +13,7 @@ doc
 
 # jeweler generated
 pkg
+.gem
 
 # Have editor/IDE/OS specific files you need to ignore? Consider using a global gitignore: 
 #
@@ -27,7 +28,7 @@ pkg
 #
 # For MacOS:
 #
-#.DS_Store
+.DS_Store
 #
 # For TextMate
 #*.tmproj
