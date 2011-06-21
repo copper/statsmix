@@ -1,6 +1,9 @@
 = statsmix
 
-A Ruby wrapper for the StatsMix API - http://www.statsmix.com/developers
+A Ruby gem for the StatsMix API - http://www.statsmix.com/developers
+
+WARNING: This is currently experimental and not recommend for production use. Version 1.0 (coming soon) will be tested and suitable for production.
+
 
 == Contributing to statsmix
  

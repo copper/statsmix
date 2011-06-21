@@ -2,7 +2,6 @@ require 'net/http'
 
 class StatsMix
   
-  # BASE_URI = 'http://localhost:3000/api/v2/'
   BASE_URI = 'http://www.statsmix.com/api/v2/'
   
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
