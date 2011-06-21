@@ -6,7 +6,8 @@ WARNING: This is currently experimental and not recommend for production use.
 
 StatsMix makes it easy to track, chart, and share application and business metrics.
 
-To get started with the gem, you'll need a API key. You can get a free developer account here: http://www.statsmix.com/try?plan=developer
+To get started, you'll need a API key for StatsMix. You can get a free developer account here: http://www.statsmix.com/try?plan=developer
+
 
 == Contributing to statsmix
  
@@ -17,6 +18,7 @@ To get started with the gem, you'll need a API key. You can get a free developer
 * Commit and push until you are happy with your contribution
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+
 
 == Copyright
 
