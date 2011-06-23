@@ -13,7 +13,9 @@ class TestStatsmix < Test::Unit::TestCase
   # https://github.com/myronmarston/vcr
   
   should "initialize StatsMix API" do
-    # statsmix = StatsMix.new('59f08613db2691f28afe', 'xml')
+    statsmix = StatsMix.new('59f08613db2691f28afe', 'xml')
+    response = statsmix.list_metrics
+    puts response
   end
   
   # # metrics
@@ -36,7 +38,7 @@ class TestStatsmix < Test::Unit::TestCase
   # should "delete metric" do
   #   
   # end
-  # 
+
   # # stats
   # should "create stat" do
   #   

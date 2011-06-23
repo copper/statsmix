@@ -41,7 +41,7 @@ class StatsMix
     request.set_form_data(form_hash)
     
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Get stat
@@ -56,7 +56,7 @@ class StatsMix
     request.set_form_data({"api_key" => @api_key})
     
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Create stat
@@ -80,7 +80,7 @@ class StatsMix
     request.set_form_data(form_hash)
     
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Update stat
@@ -107,7 +107,7 @@ class StatsMix
     request.set_form_data(form_hash)
 
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Delete stat
@@ -122,7 +122,7 @@ class StatsMix
     request.set_form_data({"api_key" => @api_key})
     
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Metrics
@@ -148,7 +148,7 @@ class StatsMix
     request.set_form_data(form_hash)
     
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Get metric
@@ -163,7 +163,7 @@ class StatsMix
     request.set_form_data({"api_key" => @api_key})
     
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Create metric
@@ -185,7 +185,7 @@ class StatsMix
     request.set_form_data(form_hash)
     
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Update metric
@@ -212,7 +212,7 @@ class StatsMix
     request.set_form_data(form_hash)
 
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
   
   # Delete metric
@@ -227,6 +227,6 @@ class StatsMix
     request.set_form_data({"api_key" => @api_key})
     
     response = @connection.request(request)
-    puts response.body, response.code, response.message
+    return response.body
   end
 end
