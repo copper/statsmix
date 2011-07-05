@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.license = "MIT"
   gem.summary = %Q{A Ruby gem for the StatsMix API.}
   gem.description = %Q{A Ruby gem for the StatsMix API - http://www.statsmix.com/developers}
-  gem.email = "tmarkiewicz@gmail.com"
-  gem.authors = ["Tom Markiewicz"]
+  gem.email = ["tmarkiewicz@gmail.com","me@derekscruggs.com"]
+  gem.authors = ["Tom Markiewicz","Derek Scruggs"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
