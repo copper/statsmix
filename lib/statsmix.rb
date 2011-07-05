@@ -263,7 +263,7 @@ class StatsMix
     self.setup
     
     if @api_key.nil?
-      raise "API key not set. You must set it frist with StatsMix.api_key = [your api key]"
+      raise "API key not set. You must set it first with StatsMix.api_key = [your api key]"
     end
     # Resources available: stats, metrics, TODO: profiles
     @url = URI.parse(BASE_URI + resource)
