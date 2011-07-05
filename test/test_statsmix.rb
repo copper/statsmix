@@ -3,7 +3,7 @@ require 'statsmix'
 
 class TestStatsmix < Test::Unit::TestCase
   
-  # TODO use fakwweb gem for testing
+  # TODO use fakwweb gem for testing 
   # http://technicalpickles.com/posts/stop-net-http-dead-in-its-tracks-with-fakeweb/
   # https://github.com/chrisk/fakeweb
   # http://fakeweb.rubyforge.org/
