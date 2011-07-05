@@ -1,128 +1,101 @@
 require 'net/http'
+require 'rubygems'
+require 'json'
 
 class StatsMix
   
-  BASE_URI = 'http://www.statsmix.com/api/v2/'
-  # BASE_URI = 'http://localhost:3000/api/v2/'
+  BASE_URI = 'http://statsmix.com/api/v2/'
   
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
-  
-  def initialize(api_key, format = 'xml')
-    @api_key = api_key
-    @format = format
-    @user_agent = "StatsMix Ruby Gem " + GEM_VERSION
+
+  # Track an event
+  # 
+  # Required: name of metric
+  # Optional: value, options {:generated_at}
+  # Returns: Net::HTTP object
+  def self.track(name, value = nil, options = {})
+    self.connect('track')
+    @request_uri = @url.path + '.' + @format
+    @request = Net::HTTP::Get.new(@request_uri)
+    @params['name'] = name
+    if @test_metric_name
+      @params['name'] = @test_metric_name
+    end
+    @params['value'] = value if value != nil
+    @params.merge!(options)
+    if @params['meta'] && !@params['meta'].is_a?(String)
+      if @params['meta'].respond_to?('to_json')
+        @params['meta'] = @params['meta'].to_json
+      end
+    end
+    return do_request
   end
-  
-  def connect(resource)
-    # Resources available: stats, metrics, TODO: profiles
-    @url = URI.parse(BASE_URI + resource)
-    @connection = Net::HTTP.new(@url.host, @url.port)
-    
-  end
-  
   # Stats
   
   # List stats (index)
   # 
   # Required: metric_id
   # Optional: limit
-  def list_stats(metric_id, limit = nil)
-    connect('stats')
-    request = Net::HTTP::Get.new(@url.path + '.' + @format)
-    request["User-Agent"] = @user_agent
-    
-    form_hash = Hash.new
-    form_hash["api_key"] = @api_key
-    form_hash["metric_id"] = metric_id
-    if limit != nil
-      form_hash["limit"] = limit
-    end
-    
-    request.set_form_data(form_hash)
-    
-    response = @connection.request(request)
-    return response.body
+  # Returns: Net::HTTP object
+  def self.list_stats(metric_id, limit = nil)
+    self.connect('stats')
+    @request_uri = @url.path + '.' + @format
+    @request = Net::HTTP::Get.new(@request_uri)
+    @params["metric_id"] = metric_id
+    @params["limit"] = limit if limit != nil
+    return do_request
   end
   
   # Get stat
   # 
   # Required: stat_id
   # Optional: none
-  def get_stat(stat_id)
+  # Returns: Net::HTTP object
+  def self.get_stat(stat_id)
     connect('stats')
-    request = Net::HTTP::Get.new(@url.path + '/' + stat_id.to_s + '.' + @format)
-    request["User-Agent"] = @user_agent
-    
-    request.set_form_data({"api_key" => @api_key})
-    
-    response = @connection.request(request)
-    return response.body
+    @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
+    @request = Net::HTTP::Get.new(@request_uri)
+    return do_request
   end
   
   # Create stat
   # 
   # Required: metric_id
-  # Optional: value, generated_at, meta
-  def create_stat(metric_id, value = 1, generated_at = Time.now, meta = nil)
+  # Optional: value, params[:generated_at, :meta]
+  # Returns: Net::HTTP object
+  def self.create_stat(metric_id, value = nil, params = {})
     connect('stats')
-    request = Net::HTTP::Post.new(@url.path + '.' + @format)
-    request["User-Agent"] = @user_agent
-
-    form_hash = Hash.new
-    form_hash["api_key"] = @api_key
-    form_hash["value"] = value
-    form_hash["metric_id"] = metric_id
-    form_hash["generated_at"] = generated_at
-    if meta != nil
-      form_hash["meta"] = meta
-    end
-    
-    request.set_form_data(form_hash)
-    
-    response = @connection.request(request)
-    return response.body
+    @request_uri = @url.path + '.' + @format
+    @request = Net::HTTP::Post.new(@request_uri)
+    @params.merge!(params)
+    @params["value"] = value if value
+    return do_request
   end
   
   # Update stat
   # 
   # Required: stat_id
   # Optional: value, generated_at, meta
-  def update_stat(stat_id, value = nil, generated_at = nil, meta = nil)  
+  # Returns: Net::HTTP object
+  def self.update_stat(stat_id, value = nil, params = {})  
     connect('stats')
-    request = Net::HTTP::Put.new(@url.path + '/' + stat_id.to_s + '.' + @format)
-    request["User-Agent"] = @user_agent
-
-    form_hash = Hash.new
-    form_hash["api_key"] = @api_key
-    if value != nil
-      form_hash["value"] = value
-    end
-    if generated_at != nil
-      form_hash["generated_at"] = generated_at
-    end
-    if meta != nil
-      form_hash["meta"] = meta
-    end
-    
-    request.set_form_data(form_hash)
-
-    response = @connection.request(request)
-    return response.body
+    @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
+    @request = Net::HTTP::Put.new(@request_uri)
+    @params.merge!(params)
+    @params["value"] = value if value != nil
+    return do_request
   end
   
   # Delete stat
   # 
   # Required: stat_id
   # Optional: none
-  def delete_stat(stat_id)    
+  # Returns: Net::HTTP object
+  def self.delete_stat(stat_id)    
     connect('stats')
-    request = Net::HTTP::Delete.new(@url.path + '/' + stat_id.to_s + '.' + @format)
-    request["User-Agent"] = @user_agent
-    
-    request.set_form_data({"api_key" => @api_key})
-    
-    response = @connection.request(request)
-    return response.body
+    @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
+    @request = Net::HTTP::Delete.new(@request_uri)
+    return do_request
   end
   
   # Metrics
@@ -131,102 +104,194 @@ class StatsMix
   # 
   # Required: none
   # Optional: profile_id, limit
-  def list_metrics(profile_id = nil, limit = nil)
+  # Returns: Net::HTTP object
+  def self.list_metrics(profile_id = nil, limit = nil)
     connect('metrics')
-    request = Net::HTTP::Get.new(@url.path + '.' + @format)
-    request["User-Agent"] = @user_agent
+    @request_uri = @url.path + '.' + @format
+    @request = Net::HTTP::Get.new(@request_uri)
+
+    @params["profile_id"] = profile_id if profile_id  != nil
+    @params["limit"] = limit if limit != nil
     
-    form_hash = Hash.new
-    form_hash["api_key"] = @api_key
-    if profile_id != nil
-      form_hash["profile_id"] = profile_id
-    end
-    if limit != nil
-      form_hash["limit"] = limit
-    end
-    
-    request.set_form_data(form_hash)
-    
-    response = @connection.request(request)
-    return response.body
+    return do_request
   end
   
   # Get metric
   # 
   # Required: metric_id
   # Optional: none
-  def get_metric(metric_id)
+  # Returns: Net::HTTP object
+  def self.get_metric(metric_id)
     connect('metrics')
-    request = Net::HTTP::Get.new(@url.path + '/' + metric_id.to_s + '.' + @format)
-    request["User-Agent"] = @user_agent
-    
-    request.set_form_data({"api_key" => @api_key})
-    
-    response = @connection.request(request)
-    return response.body
+    @request_uri = @url.path + '/' + metric_id.to_s + '.' + @format
+    @request = Net::HTTP::Get.new(@request_uri)
+    return do_request
   end
   
   # Create metric
   # 
   # Required: name
-  # Optional: profile_id, generated_at
-  def create_metric(name, profile_id = nil)
+  # Optional: params[:profile_id, :sharing, :include_in_email]
+  # Returns: Net::HTTP object
+  def self.create_metric(name,params={})
     connect('metrics')
-    request = Net::HTTP::Post.new(@url.path + '.' + @format)
-    request["User-Agent"] = @user_agent
-
-    form_hash = Hash.new
-    form_hash["api_key"] = @api_key
-    form_hash["name"] = name
-    if profile_id != nil
-      form_hash["profile_id"] = profile_id
-    end
-    
-    request.set_form_data(form_hash)
-    
-    response = @connection.request(request)
-    return response.body
+    @params.merge!(params)
+    @params['name'] = name
+    @request_uri = @url.path + '.' + @format
+    @request = Net::HTTP::Post.new(@request_uri)
+    return do_request
   end
   
   # Update metric
   # 
   # Required: metric_id
-  # Optional: name, sharing, include_in_email
-  def update_metric(metric_id, name = nil, sharing = nil, include_in_email = nil)  
+  # Optional: params[:profile_id, :sharing, :include_in_email]
+  # Returns: Net::HTTP object
+  def self.update_metric(metric_id, params = {})  
     connect('metrics')
-    request = Net::HTTP::Put.new(@url.path + '/' + metric_id.to_s + '.' + @format)
-    request["User-Agent"] = @user_agent
+    @params = [] if @params.nil?
+    @params.merge!(params)
+    @request_uri = @url.path + '/' + metric_id.to_s + '.' + @format
+    @request = Net::HTTP::Put.new(@request_uri)
 
-    form_hash = Hash.new
-    form_hash["api_key"] = @api_key
-    if name != nil
-      form_hash["name"] = name
-    end
-    if sharing != nil
-      form_hash["sharing"] = sharing
-    end
-    if include_in_email != nil
-      form_hash["include_in_email"] = include_in_email
-    end
-    
-    request.set_form_data(form_hash)
-
-    response = @connection.request(request)
-    return response.body
+    return do_request
   end
   
   # Delete metric
   # 
   # Required: metric_id
   # Optional: none
-  def delete_metric(metric_id)    
+  # Returns: Net::HTTP object
+  def self.delete_metric(metric_id)    
     connect('metrics')
-    request = Net::HTTP::Delete.new(@url.path + '/' + metric_id.to_s + '.' + @format)
-    request["User-Agent"] = @user_agent
+    @request_uri = @url.path + '/' + metric_id.to_s + '.' + @format
+    @request = Net::HTTP::Delete.new(@request_uri)
+    return do_request
+  end
+  
+  def initialize(api_key = nil)
+    self.setup(api_key)
+  end
+  
+  # Returns: Net::HTTP object
+  def self.response
+    @response
+  end
+  
+  # Returns: string or boolean false
+  def self.error
+    @error
+  end
+  
+  # Returns: hash
+  def self.params
+    @params
+  end
+  
+  def self.api_key=(string)
+    @api_key = string
+  end
+  
+  # Returns: string
+  def self.api_key
+    @api_key
+  end
+  
+  def self.ignore=(boolean)
+    @ignore = boolean ? true : false
+  end
+  
+  #Returns: boolean
+  def self.ignore
+    @ignore
+  end
+  
+  def self.test_metric_name=(name)
+    @test_metric_name = name
+  end
+  
+  #Returns: string or nil
+  def self.test_metric_name
+    @test_metric_name
+  end
+  
+  # Returns: string
+  def self.api_key
+    @api_key
+  end
+  
+  def self.api_from_env
+    return nil if ENV['STATSMIX_URL'].nil?
+    url = ENV['STATSMIX_URL']
+    pieces = url.gsub('http://','').gsub('https://','').split('/')
+    @api_key = pieces[2]
+  end
+  
+  def self.format=(string)
+    string.downcase!
+    if string != 'json' && string != 'xml'
+      raise "format MUST be either xml or json"
+    end
+    @format = string
+  end
+  
+  # Returns: string
+  def self.format
+    @format
+  end
+  
+  # Returns: string
+  def self.request_uri
+    @request_uri
+  end
+  private
+  
+  def self.setup(api_key = nil)
+    return if @initiliazed
+    if !api_key.nil?
+      @api_key = api_key
+    end
+    @format = 'xml' if @format.nil?
+    @ignore = false if @ignore.nil?
+    @user_agent = "StatsMix Ruby Gem " + GEM_VERSION
+    @initiliazed = true
+    @error = false
+  end
+  
+  def self.connect(resource)
+    self.setup
     
-    request.set_form_data({"api_key" => @api_key})
+    if @api_key.nil?
+      raise "API key not set. You must set it frist with StatsMix.api_key = [your api key]"
+    end
+    # Resources available: stats, metrics, TODO: profiles
+    @url = URI.parse(BASE_URI + resource)
+    @connection = Net::HTTP.new(@url.host, @url.port)
     
-    response = @connection.request(request)
-    return response.body
+    @request = Hash.new
+    @request["User-Agent"] = @user_agent
+    @params = Hash.new
+    @params["api_key"] = @api_key
+  end
+  
+  def self.do_request
+    @error = false
+    return if @ignore
+    @request.set_form_data(@params)
+    @response = @connection.request(@request)
+    if @response.is_a?(Net::HTTPClientError)
+      if 'xml' == @format
+        begin
+          @error = @response.body.match('<error>(.)+</error>')[0].gsub('<error>','').gsub('</error>','')
+        rescue
+          @error = 'Unable to parse error message. Check StatsMix.response for more information'
+        end
+      else
+        @error = JSON.parse(@response.body)['errors']['error']
+      end
+    end
+    @response.body
   end
 end
+
+StatsMix.api_from_env

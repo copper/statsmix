@@ -12,51 +12,16 @@ class TestStatsmix < Test::Unit::TestCase
   # http://www.rubyinside.com/vcr-a-recorder-for-all-your-tests-http-interactions-4169.html
   # https://github.com/myronmarston/vcr
   
-  should "initialize StatsMix API" do
-    statsmix = StatsMix.new('59f08613db2691f28afe', 'xml')
-    response = statsmix.list_metrics
-    puts response
+  should "Track a stat and view the results in xml" do
+    StatsMix.api_key = '59f08613db2691f28afe'
+    result = StatsMix.track('Ruby Gem Testing')
+    assert_response 200
+    if StatsMix.error
+      raise "Error in gem: #{StatsMix.error}"
+    end
+    assert !StatsMix.error
+    puts result
   end
   
-  # # metrics
-  # should "create metric" do
-  #   
-  # end
-  # 
-  # should "get metric" do
-  # 
-  # end
-  # 
-  # should "list metrics" do
-  #   
-  # end
-  # 
-  # should "update metric" do
-  #   
-  # end
-  # 
-  # should "delete metric" do
-  #   
-  # end
 
-  # # stats
-  # should "create stat" do
-  #   
-  # end
-  # 
-  # should "get stat" do
-  #   
-  # end
-  # 
-  # should "list stats" do
-  #   
-  # end
-  # 
-  # should "update stat" do
-  #   
-  # end
-  # 
-  # should "delete stat" do
-  #   
-  # end
 end
