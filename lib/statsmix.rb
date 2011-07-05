@@ -2,7 +2,6 @@ require 'net/http'
 require 'net/https'
 require 'rubygems'
 require 'json'
-
 class StatsMix
   
   BASE_URI = 'https://statsmix.com/api/v2/'
@@ -69,6 +68,7 @@ class StatsMix
     connect('stats')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Post.new(@request_uri)
+    @params[:metric_id] = metric_id
     @params.merge!(params)
     @params[:value] = value if value
     return do_request
@@ -135,7 +135,7 @@ class StatsMix
   # Required: name
   # Optional: params[:profile_id, :sharing, :include_in_email]
   # Returns: Net::HTTP object
-  def self.create_metric(name,params={})
+  def self.create_metric(name, params = {})
     connect('metrics')
     @params.merge!(params)
     @params[:name] = name
@@ -169,10 +169,6 @@ class StatsMix
     @request_uri = @url.path + '/' + metric_id.to_s + '.' + @format
     @request = Net::HTTP::Delete.new(@request_uri)
     return do_request
-  end
-  
-  def initialize(api_key = nil)
-    self.setup(api_key)
   end
   
   # Returns: Net::HTTP object
