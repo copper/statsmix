@@ -1,4 +1,5 @@
 require 'net/http'
+require 'net/https'
 require 'rubygems'
 require 'json'
 
@@ -268,7 +269,7 @@ class StatsMix
     # Resources available: stats, metrics, TODO: profiles
     @url = URI.parse(BASE_URI + resource)
     @connection = Net::HTTP.new(@url.host, @url.port)
-    
+    @connection.use_ssl = (@url.scheme == 'https')
     @request = Hash.new
     @request["User-Agent"] = @user_agent
     @params = Hash.new
@@ -292,6 +293,16 @@ class StatsMix
       end
     end
     @response.body
+  end
+end
+
+#added to suppress ssl warnings per advice at http://www.5dollarwhitebox.org/drupal/node/64
+class Net::HTTP
+  alias_method :old_initialize, :initialize
+  def initialize(*args)
+    old_initialize(*args)
+    @ssl_context = OpenSSL::SSL::SSLContext.new
+    @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 end
 
