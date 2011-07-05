@@ -4,7 +4,7 @@ require 'json'
 
 class StatsMix
   
-  BASE_URI = 'https://statsmix.com/api/v2/'
+  BASE_URI = 'http://localhost:3000/api/v2/'
   
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
 
@@ -17,15 +17,16 @@ class StatsMix
     self.connect('track')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
-    @params['name'] = name
+    @params[:name] = name
     if @test_metric_name
-      @params['name'] = @test_metric_name
+      @params[:name] = @test_metric_name
     end
-    @params['value'] = value if value != nil
+    @params[:value] = value if value != nil
     @params.merge!(options)
-    if @params['meta'] && !@params['meta'].is_a?(String)
-      if @params['meta'].respond_to?('to_json')
-        @params['meta'] = @params['meta'].to_json
+    @params[:meta] =
+    if @params[:meta] && !@params[:meta].is_a?(String)
+      if @params[:meta].respond_to?('to_json')
+        @params[:meta] = @params[:meta].to_json
       end
     end
     return do_request
@@ -41,8 +42,8 @@ class StatsMix
     self.connect('stats')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
-    @params["metric_id"] = metric_id
-    @params["limit"] = limit if limit != nil
+    @params[:metric_id] = metric_id
+    @params[:limit] = limit if limit != nil
     return do_request
   end
   
@@ -68,7 +69,7 @@ class StatsMix
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Post.new(@request_uri)
     @params.merge!(params)
-    @params["value"] = value if value
+    @params[:value] = value if value
     return do_request
   end
   
@@ -82,7 +83,7 @@ class StatsMix
     @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
     @request = Net::HTTP::Put.new(@request_uri)
     @params.merge!(params)
-    @params["value"] = value if value != nil
+    @params[:value] = value if value != nil
     return do_request
   end
   
@@ -110,8 +111,8 @@ class StatsMix
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
 
-    @params["profile_id"] = profile_id if profile_id  != nil
-    @params["limit"] = limit if limit != nil
+    @params[:profile_id] = profile_id if profile_id  != nil
+    @params[:limit] = limit if limit != nil
     
     return do_request
   end
@@ -136,7 +137,7 @@ class StatsMix
   def self.create_metric(name,params={})
     connect('metrics')
     @params.merge!(params)
-    @params['name'] = name
+    @params[:name] = name
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Post.new(@request_uri)
     return do_request
@@ -271,7 +272,7 @@ class StatsMix
     @request = Hash.new
     @request["User-Agent"] = @user_agent
     @params = Hash.new
-    @params["api_key"] = @api_key
+    @params[:api_key] = @api_key
   end
   
   def self.do_request
