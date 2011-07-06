@@ -6,15 +6,15 @@ StatsMix makes it easy to track, chart, and share application and business metri
 
 To get started, you'll need a API key for StatsMix. You can get a free developer account here: http://www.statsmix.com/try?plan=developer
 
-Detail documentation is at  http://www.statsmix.com/developers/ruby_gem
+Full gem documentation is at  http://www.statsmix.com/developers/ruby_gem
 
 == Quick Start ==
 
 #install the gem from the command line
 gem install statsmix
 
+#in your code
 require "statsmix"
-
 StatsMix.api_key = "YOUR API KEY"
 
 #push a stat with the value 1 (default) to a metric called "My First Metric"
