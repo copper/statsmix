@@ -36,14 +36,15 @@ class StatsMix
   # List stats (index)
   # 
   # Required: metric_id
-  # Optional: limit
+  # Optional: limit, {:startdate => nil, :end_date => nil}
+  # Use start_date and end_date as has keys in the third param to scope the date range of stats based on the generated_at timestamp of a stat
   # Returns: Net::HTTP object
-  def self.list_stats(metric_id, limit = nil)
+  def self.list_stats(metric_id, limit = nil, options = {})
     self.connect('stats')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
     @params[:metric_id] = metric_id
-    @params[:limit] = limit if limit != nil
+    @params.merge!(options)
     return do_request
   end
   
@@ -293,13 +294,13 @@ class StatsMix
 end
 
 #added to suppress ssl warnings per advice at http://www.5dollarwhitebox.org/drupal/node/64
-class Net::HTTP
-  alias_method :old_initialize, :initialize
-  def initialize(*args)
-    old_initialize(*args)
-    @ssl_context = OpenSSL::SSL::SSLContext.new
-    @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  end
-end
+# class Net::HTTP
+#   alias_method :old_initialize, :initialize
+#   def initialize(*args)
+#     old_initialize(*args)
+#     @ssl_context = OpenSSL::SSL::SSLContext.new
+#     @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+#   end
+# end
 
 StatsMix.api_from_env
