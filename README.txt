@@ -1,6 +1,6 @@
 A Ruby gem for the StatsMix API - http://www.statsmix.com/developers
 
-WARNING: This is currently experimental and not recommend for production use.
+WARNING: This gem is undergoing rapid improvements. Please use caution and check for updates accordingly.
 
 StatsMix makes it easy to track, chart, and share application and business metrics.
 
