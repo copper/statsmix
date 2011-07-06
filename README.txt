@@ -1,5 +1,3 @@
-= statsmix
-
 A Ruby gem for the StatsMix API - http://www.statsmix.com/developers
 
 WARNING: This is currently experimental and not recommend for production use.
