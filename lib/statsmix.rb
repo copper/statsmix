@@ -5,7 +5,7 @@ require 'json'
 class StatsMix
   
   BASE_URI = 'https://statsmix.com/api/v2/'
-  
+  RootCA = '/etc/ssl/certs'
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
 
   # Track an event
@@ -263,10 +263,20 @@ class StatsMix
     if @api_key.nil?
       raise "API key not set. You must set it first with StatsMix.api_key = [your api key]"
     end
+    
     # Resources available: stats, metrics, TODO: profiles
     @url = URI.parse(BASE_URI + resource)
     @connection = Net::HTTP.new(@url.host, @url.port)
     @connection.use_ssl = (@url.scheme == 'https')
+    
+    if File.directory? RootCA
+      @connection.ca_path = RootCA
+      @connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      @connection.verify_depth = 5
+    else
+      @connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+    
     @request = Hash.new
     @request["User-Agent"] = @user_agent
     @params = Hash.new
