@@ -5,7 +5,6 @@ require 'json'
 class StatsMix
   
   BASE_URI = 'https://statsmix.com/api/v2/'
-  RootCA = '/etc/ssl/certs'
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
 
   # Track an event
@@ -269,13 +268,7 @@ class StatsMix
     @connection = Net::HTTP.new(@url.host, @url.port)
     @connection.use_ssl = (@url.scheme == 'https')
     
-    if File.directory? RootCA
-      @connection.ca_path = RootCA
-      @connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      @connection.verify_depth = 5
-    else
-      @connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    end
+    @connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
     
     @request = Hash.new
     @request["User-Agent"] = @user_agent
