@@ -4,8 +4,7 @@ require 'rubygems'
 require 'json'
 class StatsMix
   
-  #BASE_URI = 'https://statsmix.com/api/v2/'
-  BASE_URI = 'http://localhost:3000/api/v2/'
+  BASE_URI = 'https://statsmix.com/api/v2/'
   
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
 
@@ -271,10 +270,14 @@ class StatsMix
     if @api_key.nil?
       raise "API key not set. You must set it first with StatsMix.api_key = [your api key]"
     end
+    
     # Resources available: stats, metrics, TODO: profiles
     @url = URI.parse(BASE_URI + resource)
     @connection = Net::HTTP.new(@url.host, @url.port)
     @connection.use_ssl = (@url.scheme == 'https')
+    
+    @connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    
     @request = Hash.new
     @request["User-Agent"] = @user_agent
     @params = Hash.new
