@@ -4,7 +4,8 @@ require 'rubygems'
 require 'json'
 class StatsMix
   
-  BASE_URI = 'https://statsmix.com/api/v2/'
+  #BASE_URI = 'https://statsmix.com/api/v2/'
+  BASE_URI = 'http://localhost:3000/api/v2/'
   
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
 
@@ -43,8 +44,15 @@ class StatsMix
     self.connect('stats')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
+    
     @params[:metric_id] = metric_id
     @params.merge!(options)
+    if @params[:start_date] && @params[:start_date].is_a?(ActiveSupport::TimeWithZone)
+      @params[:start_date] = @params[:start_date].utc.strftime('%Y-%m-%d %H:%M:%S')
+    end
+    if @params[:end_date] && @params[:end_date].is_a?(ActiveSupport::TimeWithZone)
+      @params[:end_date] = @params[:end_date].utc.strftime('%Y-%m-%d %H:%M:%S')
+    end
     return do_request
   end
   
