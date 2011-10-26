@@ -179,6 +179,70 @@ class StatsMix
     return do_request
   end
   
+  # partner api methods
+  # see http://www.statsmix.com/developers/partner_api
+  
+  # list users
+  # 
+  # Optional: none
+  # Returns: Net::HTTP object
+  def self.list_users
+    connect('partners')
+    @request_uri = @url.path
+    @request = Net::HTTP::Get.new(@request_uri)
+    return do_request
+  end
+  
+  # Get user
+  # 
+  # Required: id_or_api_key - id or api key of the user to get
+  # Optional: none
+  # Returns: Net::HTTP object
+  def self.get_user(id_or_api_key)
+    connect('partners')
+    @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
+    @request = Net::HTTP::Get.new(@request_uri)
+    return do_request
+  end
+  
+  # Create user
+  # 
+  # Required: {:email => 'user@example.com'} - if the email already exists in our system, we will return the existing user
+  # Optional: :email,:name,:plan,:company,:url, :metrics[]
+  # Returns: Net::HTTP object
+  def self.create_user(params = {})
+    connect('partners')
+    @request_uri = @url.path + '.' + @format
+    @request = Net::HTTP::Post.new(@request_uri)
+    @params.merge!(params)
+    return do_request
+  end
+  
+  # Update user
+  # 
+  # Required: id_or_api_key - id or api key of the user to get
+  # Optional: params with keys :email,:name,:plan,:company,:url
+  # Returns: Net::HTTP object
+  def self.update_user(id_or_api_key, params = {})  
+    connect('partners')
+    @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
+    @request = Net::HTTP::Put.new(@request_uri)
+    @params.merge!(params)
+    return do_request
+  end
+  
+  # Delete user
+  # 
+  # Required: id_or_api_key - id or api key of the user to get
+  # Optional: none
+  # Returns: Net::HTTP object
+  def self.delete_user(id_or_api_key)    
+    connect('partners')
+    @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
+    @request = Net::HTTP::Delete.new(@request_uri)
+    return do_request
+  end
+  
   # Returns: Net::HTTP object
   def self.response
     @response
@@ -287,7 +351,8 @@ class StatsMix
   def self.do_request
     @error = false
     return if @ignore
-    @request.set_form_data(@params)
+    #had to add code to support properly encoding array values.  See http://blog.assimov.net/post/653645115/post-put-arrays-with-ruby-net-http-set-form-data
+    self.set_form_data(@params)
     @response = @connection.request(@request)
     if @response.is_a?(Net::HTTPClientError)
       if 'xml' == @format
@@ -301,6 +366,21 @@ class StatsMix
       end
     end
     @response.body
+  end
+  #based on http://blog.assimov.net/post/653645115/post-put-arrays-with-ruby-net-http-set-form-data
+  def self.set_form_data(params, sep = '&')
+    @request.body = params.map {|k,v|
+      if v.instance_of?(Array)
+        v.map {|e| "#{self.urlencode(k.to_s)}[]=#{urlencode(e.to_s)}"}.join(sep)
+      else
+        "#{self.urlencode(k.to_s)}=#{self.urlencode(v.to_s)}"
+      end
+    }.join(sep)
+    @request.content_type = 'application/x-www-form-urlencoded'
+  end
+
+  def self.urlencode(str)
+    str.gsub(/[^a-zA-Z0-9_\.\-]/n) {|s| sprintf('%%%02x', s[0]) }
   end
 end
 
