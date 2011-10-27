@@ -14,6 +14,7 @@ class StatsMix
   # Optional: value, options {:generated_at}
   # Returns: Net::HTTP object
   def self.track(name, value = nil, options = {})
+    options = options.with_indifferent_access
     self.connect('track')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
@@ -23,12 +24,7 @@ class StatsMix
     end
     @params[:value] = value if value != nil
     @params.merge!(options)
-    @params[:meta] =
-    if @params[:meta] && !@params[:meta].is_a?(String)
-      if @params[:meta].respond_to?('to_json')
-        @params[:meta] = @params[:meta].to_json
-      end
-    end
+    self.check_meta
     return do_request
   end
   # Stats
@@ -40,6 +36,7 @@ class StatsMix
   # Use start_date and end_date as has keys in the third param to scope the date range of stats based on the generated_at timestamp of a stat
   # Returns: Net::HTTP object
   def self.list_stats(metric_id, limit = nil, options = {})
+    options = options.with_indifferent_access
     self.connect('stats')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
@@ -73,26 +70,30 @@ class StatsMix
   # Optional: value, params[:generated_at, :meta]
   # Returns: Net::HTTP object
   def self.create_stat(metric_id, value = nil, params = {})
+    params = params.with_indifferent_access
     connect('stats')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Post.new(@request_uri)
     @params[:metric_id] = metric_id
-    @params.merge!(params)
     @params[:value] = value if value
+    @params.merge!(params)
+    self.check_meta
     return do_request
   end
   
   # Update stat
   # 
   # Required: stat_id
-  # Optional: value, generated_at, meta
+  # Optional: value, params[:generated_at, :meta]
   # Returns: Net::HTTP object
   def self.update_stat(stat_id, value = nil, params = {})  
+    params = params.with_indifferent_access
     connect('stats')
     @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
     @request = Net::HTTP::Put.new(@request_uri)
+    @params[:value] = value if value
     @params.merge!(params)
-    @params[:value] = value if value != nil
+    self.check_meta
     return do_request
   end
   
@@ -144,6 +145,7 @@ class StatsMix
   # Optional: params[:profile_id, :sharing, :include_in_email]
   # Returns: Net::HTTP object
   def self.create_metric(name, params = {})
+    params = params.with_indifferent_access
     connect('metrics')
     @params.merge!(params)
     @params[:name] = name
@@ -157,7 +159,8 @@ class StatsMix
   # Required: metric_id
   # Optional: params[:profile_id, :sharing, :include_in_email]
   # Returns: Net::HTTP object
-  def self.update_metric(metric_id, params = {})  
+  def self.update_metric(metric_id, params = {})
+    params = params.with_indifferent_access
     connect('metrics')
     @params = [] if @params.nil?
     @params.merge!(params)
@@ -211,7 +214,7 @@ class StatsMix
   # Optional: :email,:name,:plan,:company,:url, :metrics[]
   # Returns: Net::HTTP object
   def self.create_user(params = {})
-    connect('partners')
+    connect('partners/users')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Post.new(@request_uri)
     @params.merge!(params)
@@ -224,7 +227,7 @@ class StatsMix
   # Optional: params with keys :email,:name,:plan,:company,:url
   # Returns: Net::HTTP object
   def self.update_user(id_or_api_key, params = {})  
-    connect('partners')
+    connect('partners/users')
     @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
     @request = Net::HTTP::Put.new(@request_uri)
     @params.merge!(params)
@@ -237,7 +240,7 @@ class StatsMix
   # Optional: none
   # Returns: Net::HTTP object
   def self.delete_user(id_or_api_key)    
-    connect('partners')
+    connect('partners/users')
     @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
     @request = Net::HTTP::Delete.new(@request_uri)
     return do_request
@@ -345,6 +348,7 @@ class StatsMix
     @request = Hash.new
     @request["User-Agent"] = @user_agent
     @params = Hash.new
+    @params = @params.with_indifferent_access
     @params[:api_key] = @api_key
   end
   
@@ -381,6 +385,17 @@ class StatsMix
 
   def self.urlencode(str)
     str.gsub(/[^a-zA-Z0-9_\.\-]/n) {|s| sprintf('%%%02x', s[0]) }
+  end
+  
+  def self.check_meta
+    if @params[:meta] && !@params[:meta].is_a?(String) && !@params[:meta].is_a?(Hash)
+      raise "Invalid data . :meta should be a hash or a json-encoded string. You passed an object of type: #{@params[:meta].type}"
+    end
+    if @params[:meta] && !@params[:meta].is_a?(String)
+      if @params[:meta].respond_to?('to_json')
+        @params[:meta] = @params[:meta].to_json
+      end
+    end
   end
 end
 
