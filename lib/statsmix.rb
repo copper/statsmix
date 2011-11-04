@@ -4,8 +4,7 @@ require 'rubygems'
 require 'json'
 class StatsMix
   
-  #BASE_URI = 'https://statsmix.com/api/v2/'
-  BASE_URI = 'http://localhost:3000/api/v2/'
+  BASE_URI = 'https://statsmix.com/api/v2/'
   
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
 
