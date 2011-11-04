@@ -64,9 +64,12 @@ The StatsMix gem supports all the methods documented at [http://www.statsmix.com
 ## Partner API
 We recently added ALPHA-LEVEL support for our Partner API, which allows you to provision users and metrics in StatsMix. The methods are:
 
-	StatsMix.create_user({})
-	StatsMix.update_user(id,{})
-	StatsMix.delete_user(id)
+	
+	StatsMix.create_user({}) 
+	StatsMix.update_user(id,{})  
+	StatsMix.delete_user(id) 
+
+In all cases, the affected user's api key will be available via `StatsMix.user_api_key`. You can use the api key for updating and deleting users as well. In other words, __there is no need to store another identifier besides the user's api key.__
 
 Full Partner API documentation is at [http://www.statsmix.com/developers/partner_api](http://www.statsmix.com/developers/partner_api)
 

@@ -4,7 +4,8 @@ require 'rubygems'
 require 'json'
 class StatsMix
   
-  BASE_URI = 'https://statsmix.com/api/v2/'
+  #BASE_URI = 'https://statsmix.com/api/v2/'
+  BASE_URI = 'http://localhost:3000/api/v2/'
   
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
 
@@ -190,7 +191,7 @@ class StatsMix
   # Optional: none
   # Returns: Net::HTTP object
   def self.list_users
-    connect('partners')
+    connect('partners/users')
     @request_uri = @url.path
     @request = Net::HTTP::Get.new(@request_uri)
     return do_request
@@ -202,7 +203,7 @@ class StatsMix
   # Optional: none
   # Returns: Net::HTTP object
   def self.get_user(id_or_api_key)
-    connect('partners')
+    connect('partners/users')
     @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
     return do_request
@@ -218,7 +219,11 @@ class StatsMix
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Post.new(@request_uri)
     @params.merge!(params)
-    return do_request
+    result = do_request
+    unless self.error
+      @user_api_key = result.scan(/<api_key>[0-9a-zA-Z]*<\/api_key>/)[0].gsub(/<\/?api_key>/,'')
+    end
+    return result
   end
   
   # Update user
@@ -231,7 +236,11 @@ class StatsMix
     @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
     @request = Net::HTTP::Put.new(@request_uri)
     @params.merge!(params)
-    return do_request
+    result = do_request
+    unless self.error
+      @user_api_key = result.scan(/<api_key>[0-9a-zA-Z]*<\/api_key>/)[0].gsub(/<\/?api_key>/,'')
+    end
+    return result
   end
   
   # Delete user
@@ -243,7 +252,11 @@ class StatsMix
     connect('partners/users')
     @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
     @request = Net::HTTP::Delete.new(@request_uri)
-    return do_request
+    result = do_request
+    unless self.error
+      @user_api_key = result.scan(/<api_key>[0-9a-zA-Z]*<\/api_key>/)[0].gsub(/<\/?api_key>/,'')
+    end
+    return result
   end
   
   # Returns: Net::HTTP object
@@ -277,6 +290,11 @@ class StatsMix
   #Returns: boolean
   def self.ignore
     @ignore
+  end
+  
+  #Return: string
+  def self.user_api_key
+    @user_api_key
   end
   
   def self.test_metric_name=(name)
