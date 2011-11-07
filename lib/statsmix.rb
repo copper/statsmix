@@ -14,7 +14,9 @@ class StatsMix
   # Optional: value, options {:generated_at}
   # Returns: Net::HTTP object
   def self.track(name, value = nil, options = {})
-    options = options.with_indifferent_access
+    if options.respond_to?('with_indifferent_access')
+      options = options.with_indifferent_access
+    end
     self.connect('track')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
@@ -36,7 +38,9 @@ class StatsMix
   # Use start_date and end_date as has keys in the third param to scope the date range of stats based on the generated_at timestamp of a stat
   # Returns: Net::HTTP object
   def self.list_stats(metric_id, limit = nil, options = {})
-    options = options.with_indifferent_access
+    if options.respond_to?('with_indifferent_access')
+      options = options.with_indifferent_access
+    end
     self.connect('stats')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Get.new(@request_uri)
@@ -70,7 +74,9 @@ class StatsMix
   # Optional: value, params[:generated_at, :meta]
   # Returns: Net::HTTP object
   def self.create_stat(metric_id, value = nil, params = {})
-    params = params.with_indifferent_access
+    if params.respond_to?('with_indifferent_access')
+      params = params.with_indifferent_access
+    end
     connect('stats')
     @request_uri = @url.path + '.' + @format
     @request = Net::HTTP::Post.new(@request_uri)
@@ -87,7 +93,9 @@ class StatsMix
   # Optional: value, params[:generated_at, :meta]
   # Returns: Net::HTTP object
   def self.update_stat(stat_id, value = nil, params = {})  
-    params = params.with_indifferent_access
+    if params.respond_to?('with_indifferent_access')
+      params = params.with_indifferent_access
+    end
     connect('stats')
     @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
     @request = Net::HTTP::Put.new(@request_uri)
@@ -145,7 +153,9 @@ class StatsMix
   # Optional: params[:profile_id, :sharing, :include_in_email]
   # Returns: Net::HTTP object
   def self.create_metric(name, params = {})
-    params = params.with_indifferent_access
+    if params.respond_to?('with_indifferent_access')
+      params = params.with_indifferent_access
+    end
     connect('metrics')
     @params.merge!(params)
     @params[:name] = name
@@ -160,7 +170,9 @@ class StatsMix
   # Optional: params[:profile_id, :sharing, :include_in_email]
   # Returns: Net::HTTP object
   def self.update_metric(metric_id, params = {})
-    params = params.with_indifferent_access
+    if params.respond_to?('with_indifferent_access')
+      params = params.with_indifferent_access
+    end
     connect('metrics')
     @params = [] if @params.nil?
     @params.merge!(params)
@@ -365,7 +377,9 @@ class StatsMix
     @request = Hash.new
     @request["User-Agent"] = @user_agent
     @params = Hash.new
-    @params = @params.with_indifferent_access
+    if @params.respond_to?('with_indifferent_access')
+      @params = @params.with_indifferent_access
+    end
     @params[:api_key] = @api_key
   end
   

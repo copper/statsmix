@@ -15,12 +15,20 @@ class TestStatsmix < Test::Unit::TestCase
   should "Track a stat and view the results in xml" do
     StatsMix.api_key = '59f08613db2691f28afe'
     result = StatsMix.track('Ruby Gem Testing')
-    assert_response 200
     if StatsMix.error
       raise "Error in gem: #{StatsMix.error}"
     end
     assert !StatsMix.error
-    puts result
+  end
+  
+  should "Track a stat and view the results in json" do
+    StatsMix.api_key = '59f08613db2691f28afe'
+    StatsMix.format = 'json'
+    result = StatsMix.track('Ruby Gem Testing')
+    if StatsMix.error
+      raise "Error in gem: #{StatsMix.error}"
+    end
+    assert !StatsMix.error
   end
   
 
