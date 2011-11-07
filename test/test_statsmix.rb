@@ -12,16 +12,18 @@ class TestStatsmix < Test::Unit::TestCase
   # http://www.rubyinside.com/vcr-a-recorder-for-all-your-tests-http-interactions-4169.html
   # https://github.com/myronmarston/vcr
   
-  should "Track a stat and view the results in xml" do
+  should "Track a stat and view the result in xml" do
     StatsMix.api_key = '59f08613db2691f28afe'
+    StatsMix.format = 'xml'
     result = StatsMix.track('Ruby Gem Testing')
     if StatsMix.error
       raise "Error in gem: #{StatsMix.error}"
     end
     assert !StatsMix.error
+    puts result
   end
   
-  should "Track a stat and view the results in json" do
+  should "Track a stat and view the result in json" do
     StatsMix.api_key = '59f08613db2691f28afe'
     StatsMix.format = 'json'
     result = StatsMix.track('Ruby Gem Testing')
@@ -29,6 +31,7 @@ class TestStatsmix < Test::Unit::TestCase
       raise "Error in gem: #{StatsMix.error}"
     end
     assert !StatsMix.error
+    puts result
   end
   
 
