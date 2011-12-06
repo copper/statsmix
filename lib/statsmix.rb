@@ -24,7 +24,7 @@ class StatsMix
     if @test_metric_name
       @params[:name] = @test_metric_name
     end
-    @params[:value] = value if value != nil
+    @params[:value] = Float(value) unless value.nil?
     @params.merge!(options)
     self.check_meta
     return do_request
@@ -415,7 +415,7 @@ class StatsMix
   end
 
   def self.urlencode(str)
-    str.gsub(/[^a-zA-Z0-9_\.\-]/n) {|s| sprintf('%%%02x', s[0]) }
+    str.gsub(/[^a-zA-Z0-9_ \.\-]/n) {|s| sprintf('%%%02x', s[0]) }
   end
   
   def self.check_meta
