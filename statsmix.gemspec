@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{statsmix}
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tom Markiewicz", "Derek Scruggs"]
-  s.date = %q{2011-11-07}
+  s.date = %q{2011-12-06}
   s.description = %q{A Ruby gem for the StatsMix API - http://www.statsmix.com/developers}
   s.email = ["tmarkiewicz@gmail.com", "me@derekscruggs.com"]
   s.extra_rdoc_files = [
@@ -28,7 +28,8 @@ Gem::Specification.new do |s|
     "statsmix.gemspec",
     "test/helper.rb",
     "test/test_statsmix.rb",
-    "test/vcr_setup.rb"
+    "test/vcr_setup.rb",
+    "test_all_rubies.sh"
   ]
   s.homepage = %q{http://github.com/tmarkiewicz/statsmix}
   s.licenses = ["MIT"]
