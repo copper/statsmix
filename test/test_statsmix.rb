@@ -34,6 +34,17 @@ class TestStatsmix < Test::Unit::TestCase
     puts result
   end
 
+  should "Track a stat with metadataand view the result in xml" do
+    StatsMix.api_key = '59f08613db2691f28afe'
+    StatsMix.format = 'xml'
+    result = StatsMix.track('Ruby Gem Testing', 1, {"meta"=>{"client"=>"Android", "client_version"=>"1.0.7.2"}})
+    if StatsMix.error
+      raise "Error in gem: #{StatsMix.error}"
+    end
+    assert !StatsMix.error
+    puts result
+  end
+  
   should "Track a stat with metadata and view the result in json" do
     StatsMix.api_key = '59f08613db2691f28afe'
     StatsMix.format = 'json'
