@@ -415,12 +415,18 @@ class StatsMix
   end
 
   def self.urlencode(str)
-    str.gsub(/[^a-zA-Z0-9_ \.\-]/n) {|s| sprintf('%%%02x', s[0]) }
+    str.gsub(/[^a-zA-Z0-9_\{\}:, \"\.\-]/n) {|s| 
+      sprintf('%%%02x', s[0]) 
+    }
   end
   
   def self.check_meta
     if @params[:meta] && !@params[:meta].is_a?(String) && !@params[:meta].is_a?(Hash)
       raise "Invalid data . :meta should be a hash or a json-encoded string. You passed an object of type: #{@params[:meta].type}"
+    end
+    if @params[:meta].nil? && @params['meta'] 
+      @params[:meta] = @params['meta']
+      @params.delete('meta')
     end
     if @params[:meta] && !@params[:meta].is_a?(String)
       if @params[:meta].respond_to?('to_json')
