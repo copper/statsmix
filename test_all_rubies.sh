@@ -21,10 +21,13 @@ run
 # rvm use ree-1.8.7
 # run
 
+rvm use 1.9.1-p378
+run
+
 rvm use ruby-1.9.1
 run
 
-rvm use ruby-1.9.2
+rvm use ruby-1.9.2-p290
 run
 
 rvm use ruby-1.9.3
