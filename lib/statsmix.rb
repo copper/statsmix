@@ -415,9 +415,7 @@ class StatsMix
   end
 
   def self.urlencode(str)
-    str.gsub(/[^a-zA-Z0-9_\{\}:, \"\.\-]/n) {|s| 
-      sprintf('%%%02x', s[0]) 
-    }
+    URI.encode(str, /[^a-zA-Z0-9_\{\}:, \"\.\-]/n)
   end
   
   def self.check_meta
