@@ -55,5 +55,16 @@ class TestStatsmix < Test::Unit::TestCase
     assert !StatsMix.error
     puts result
   end
+  
+  should "accept URLs in the meta" do
+    StatsMix.api_key = '59f08613db2691f28afe'
+    StatsMix.format = 'json'
+    result = StatsMix.track('Ruby Gem Testing', 1, {"meta"=>{"url"=>"http://ernesto-jimenez.com/"}})
+    if StatsMix.error
+      raise "Error in gem: #{StatsMix.error}"
+    end
+    assert !StatsMix.error
+    puts result
+  end
 
 end
