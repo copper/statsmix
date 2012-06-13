@@ -2,6 +2,8 @@ require 'helper'
 require 'statsmix'
 
 class TestStatsmix < Test::Unit::TestCase
+
+  GEM_VERSION = File.exist?('VERSION') ? File.read('VERSION') : ""
   
   # TODO use fakwweb gem for testing 
   # http://technicalpickles.com/posts/stop-net-http-dead-in-its-tracks-with-fakeweb/
@@ -12,6 +14,18 @@ class TestStatsmix < Test::Unit::TestCase
   # http://www.rubyinside.com/vcr-a-recorder-for-all-your-tests-http-interactions-4169.html
   # https://github.com/myronmarston/vcr
   
+  should "Provide the correct user_agent" do
+    StatsMix.api_key = '59f08613db2691f28afe'
+    StatsMix.format = 'xml'
+    result = StatsMix.track('Ruby Gem Testing')
+    if StatsMix.error
+      raise "error in gem: #{StatsMix.error}"
+    end
+    assert !StatsMix.error
+    assert StatsMix.user_agent == "StatsMix Ruby Gem " + GEM_VERSION
+    puts StatsMix.user_agent
+  end
+
   should "Track a stat and view the result in xml" do
     StatsMix.api_key = '59f08613db2691f28afe'
     StatsMix.format = 'xml'
@@ -34,7 +48,7 @@ class TestStatsmix < Test::Unit::TestCase
     puts result
   end
 
-  should "Track a stat with metadataand view the result in xml" do
+  should "Track a stat with metadata and view the result in xml" do
     StatsMix.api_key = '59f08613db2691f28afe'
     StatsMix.format = 'xml'
     result = StatsMix.track('Ruby Gem Testing', 1, {"meta"=>{"client"=>"Android", "client_version"=>"1.0.7.2"}})
@@ -66,5 +80,4 @@ class TestStatsmix < Test::Unit::TestCase
     assert !StatsMix.error
     puts result
   end
-
 end
