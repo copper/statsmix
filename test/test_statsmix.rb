@@ -13,17 +13,12 @@ class TestStatsmix < Test::Unit::TestCase
   # TODO use VCR for tests
   # http://www.rubyinside.com/vcr-a-recorder-for-all-your-tests-http-interactions-4169.html
   # https://github.com/myronmarston/vcr
-  
-  should "check version" do
-    GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
-    puts "\nGem version: " + GEM_VERSION.to_s
-
-  end
 
   should "Provide the correct user_agent" do
     StatsMix.api_key = '59f08613db2691f28afe'
     StatsMix.format = 'xml'
     result = StatsMix.track('Ruby Gem Testing')
+    
     if StatsMix.error
       raise "error in gem: #{StatsMix.error}"
     end
