@@ -12,6 +12,11 @@ class TestStatsmix < Test::Unit::TestCase
   # http://www.rubyinside.com/vcr-a-recorder-for-all-your-tests-http-interactions-4169.html
   # https://github.com/myronmarston/vcr
   
+  should "check version" do
+    GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
+    puts "\nGem version: " + GEM_VERSION.to_s
+  end
+
   should "Track a stat and view the result in xml" do
     StatsMix.api_key = '59f08613db2691f28afe'
     StatsMix.format = 'xml'
