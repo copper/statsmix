@@ -1,11 +1,14 @@
 require 'net/http'
 require 'net/https'
+require 'socket'
 require 'rubygems'
 require 'json'
 class StatsMix
   
-  BASE_URI = 'https://api.statsmix.com/api/v2/'
   
+  HOST = 'api.statsmix.com'
+  BASE_URI = "http://#{HOST}/api/v2/"
+  UDP_PORT = 8125
   GEM_VERSION = File.exist?('../VERSION') ? File.read('../VERSION') : ""
 
   # Track an event
@@ -17,9 +20,10 @@ class StatsMix
     if options.respond_to?('with_indifferent_access')
       options = options.with_indifferent_access
     end
+
     self.connect('track')
     @request_uri = @url.path + '.' + @format
-    @request = Net::HTTP::Get.new(@request_uri)
+    @request = Net::HTTP::Get.new(@request_uri, {"User-Agent" => @user_agent})
     @params[:name] = name
     if @test_metric_name
       @params[:name] = @test_metric_name
@@ -43,7 +47,7 @@ class StatsMix
     end
     self.connect('stats')
     @request_uri = @url.path + '.' + @format
-    @request = Net::HTTP::Get.new(@request_uri)
+    @request = Net::HTTP::Get.new(@request_uri, {"User-Agent" => @user_agent})
     
     @params[:metric_id] = metric_id
     @params.merge!(options)
@@ -64,7 +68,7 @@ class StatsMix
   def self.get_stat(stat_id)
     connect('stats')
     @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
-    @request = Net::HTTP::Get.new(@request_uri)
+    @request = Net::HTTP::Get.new(@request_uri, {"User-Agent" => @user_agent})
     return do_request
   end
   
@@ -79,7 +83,7 @@ class StatsMix
     end
     connect('stats')
     @request_uri = @url.path + '.' + @format
-    @request = Net::HTTP::Post.new(@request_uri)
+    @request = Net::HTTP::Post.new(@request_uri, {"User-Agent" => @user_agent})
     @params[:metric_id] = metric_id
     @params[:value] = value if value
     @params.merge!(params)
@@ -98,7 +102,7 @@ class StatsMix
     end
     connect('stats')
     @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
-    @request = Net::HTTP::Put.new(@request_uri)
+    @request = Net::HTTP::Put.new(@request_uri, {"User-Agent" => @user_agent})
     @params[:value] = value if value
     @params.merge!(params)
     self.check_meta
@@ -113,7 +117,7 @@ class StatsMix
   def self.delete_stat(stat_id)    
     connect('stats')
     @request_uri = @url.path + '/' + stat_id.to_s + '.' + @format
-    @request = Net::HTTP::Delete.new(@request_uri)
+    @request = Net::HTTP::Delete.new(@request_uri, {"User-Agent" => @user_agent})
     return do_request
   end
   
@@ -127,7 +131,7 @@ class StatsMix
   def self.list_metrics(profile_id = nil, limit = nil)
     connect('metrics')
     @request_uri = @url.path + '.' + @format
-    @request = Net::HTTP::Get.new(@request_uri)
+    @request = Net::HTTP::Get.new(@request_uri, {"User-Agent" => @user_agent})
 
     @params[:profile_id] = profile_id if profile_id  != nil
     @params[:limit] = limit if limit != nil
@@ -143,7 +147,7 @@ class StatsMix
   def self.get_metric(metric_id)
     connect('metrics')
     @request_uri = @url.path + '/' + metric_id.to_s + '.' + @format
-    @request = Net::HTTP::Get.new(@request_uri)
+    @request = Net::HTTP::Get.new(@request_uri, {"User-Agent" => @user_agent})
     return do_request
   end
   
@@ -160,7 +164,7 @@ class StatsMix
     @params.merge!(params)
     @params[:name] = name
     @request_uri = @url.path + '.' + @format
-    @request = Net::HTTP::Post.new(@request_uri)
+    @request = Net::HTTP::Post.new(@request_uri, {"User-Agent" => @user_agent})
     return do_request
   end
   
@@ -177,7 +181,7 @@ class StatsMix
     @params = [] if @params.nil?
     @params.merge!(params)
     @request_uri = @url.path + '/' + metric_id.to_s + '.' + @format
-    @request = Net::HTTP::Put.new(@request_uri)
+    @request = Net::HTTP::Put.new(@request_uri, {"User-Agent" => @user_agent})
 
     return do_request
   end
@@ -190,7 +194,7 @@ class StatsMix
   def self.delete_metric(metric_id)    
     connect('metrics')
     @request_uri = @url.path + '/' + metric_id.to_s + '.' + @format
-    @request = Net::HTTP::Delete.new(@request_uri)
+    @request = Net::HTTP::Delete.new(@request_uri, {"User-Agent" => @user_agent})
     return do_request
   end
   
@@ -204,7 +208,7 @@ class StatsMix
   def self.list_users
     connect('partners/users')
     @request_uri = @url.path
-    @request = Net::HTTP::Get.new(@request_uri)
+    @request = Net::HTTP::Get.new(@request_uri, {"User-Agent" => @user_agent})
     return do_request
   end
   
@@ -216,7 +220,7 @@ class StatsMix
   def self.get_user(id_or_api_key)
     connect('partners/users')
     @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
-    @request = Net::HTTP::Get.new(@request_uri)
+    @request = Net::HTTP::Get.new(@request_uri, {"User-Agent" => @user_agent})
     return do_request
   end
   
@@ -228,7 +232,7 @@ class StatsMix
   def self.create_user(params = {})
     connect('partners/users')
     @request_uri = @url.path + '.' + @format
-    @request = Net::HTTP::Post.new(@request_uri)
+    @request = Net::HTTP::Post.new(@request_uri, {"User-Agent" => @user_agent})
     @params.merge!(params)
     result = do_request
     unless self.error
@@ -245,7 +249,7 @@ class StatsMix
   def self.update_user(id_or_api_key, params = {})  
     connect('partners/users')
     @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
-    @request = Net::HTTP::Put.new(@request_uri)
+    @request = Net::HTTP::Put.new(@request_uri, {"User-Agent" => @user_agent})
     @params.merge!(params)
     result = do_request
     unless self.error
@@ -262,7 +266,7 @@ class StatsMix
   def self.delete_user(id_or_api_key)    
     connect('partners/users')
     @request_uri = @url.path + '/' + id_or_api_key.to_s + '.' + @format
-    @request = Net::HTTP::Delete.new(@request_uri)
+    @request = Net::HTTP::Delete.new(@request_uri, {"User-Agent" => @user_agent})
     result = do_request
     unless self.error
       @user_api_key = result.scan(/<api_key>[0-9a-zA-Z]*<\/api_key>/)[0].gsub(/<\/?api_key>/,'')
@@ -321,6 +325,27 @@ class StatsMix
   def self.api_key
     @api_key
   end
+
+  
+  #Expects: boolean
+  def self.debugging=(value)
+    @debugging = value
+  end
+
+  # Returns: boolean
+  def self.debugging
+    @debugging
+  end
+
+  #Expects: boolean
+  def self.use_udp=(value)
+    @use_udp = value
+  end
+
+  # Returns: boolean
+  def self.use_udp
+    @use_udp
+  end
   
   def self.api_from_env
     return nil if ENV['STATSMIX_URL'].nil?
@@ -362,7 +387,6 @@ class StatsMix
   
   def self.connect(resource)
     self.setup
-    
     if @api_key.nil?
       raise "API key not set. You must set it first with StatsMix.api_key = [your api key]"
     end
@@ -371,9 +395,12 @@ class StatsMix
     @url = URI.parse(BASE_URI + resource)
     @connection = Net::HTTP.new(@url.host, @url.port)
     @connection.use_ssl = (@url.scheme == 'https')
-    
+
     @connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    
+
+    @connection.use_ssl = (@url.scheme == 'https')
+    @connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
     @request = Hash.new
     @request["User-Agent"] = @user_agent
     @params = Hash.new
@@ -383,10 +410,16 @@ class StatsMix
     @params[:api_key] = @api_key
   end
   
+  def self.user_agent
+    return @user_agent
+  end
+
   def self.do_request
     @error = false
     return if @ignore
+    return self.do_udp_request if @use_udp
     #had to add code to support properly encoding array values.  See http://blog.assimov.net/post/653645115/post-put-arrays-with-ruby-net-http-set-form-data
+    p @params
     self.set_form_data(@params)
     @response = @connection.request(@request)
     if @response.is_a?(Net::HTTPClientError)
@@ -401,6 +434,17 @@ class StatsMix
       end
     end
     @response.body
+  end
+
+  def self.do_udp_request
+    data = @params.to_json.inspect
+    @socket ||= UDPSocket.new
+    @socket.send(data, 0, HOST, UDP_PORT)
+    if @debugging
+      text, sender = @socket.recvfrom(2048)
+      p "SENT #{data}"
+      p text
+    end
   end
   #based on http://blog.assimov.net/post/653645115/post-put-arrays-with-ruby-net-http-set-form-data
   def self.set_form_data(params, sep = '&')
@@ -426,12 +470,14 @@ class StatsMix
       @params[:meta] = @params['meta']
       @params.delete('meta')
     end
+    return if @use_udp
     if @params[:meta] && !@params[:meta].is_a?(String)
       if @params[:meta].respond_to?('to_json')
         @params[:meta] = @params[:meta].to_json
       end
     end
   end
+
 end
 
 StatsMix.api_from_env
