@@ -438,13 +438,12 @@ class StatsMix
 
   def self.do_udp_request
     data = @params.to_json.inspect
-    s = UDPSocket.new
-    s.send(data, 0, HOST, UDP_PORT)
+    @socket ||= UDPSocket.new
+    @socket.send(data, 0, HOST, UDP_PORT)
     if @debugging
-      text, sender = s.recvfrom(2048)
+      text, sender = @socket.recvfrom(2048)
       p "SENT #{data}"
       p text
-      p sender
     end
   end
   #based on http://blog.assimov.net/post/653645115/post-put-arrays-with-ruby-net-http-set-form-data
