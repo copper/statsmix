@@ -7,7 +7,7 @@ class StatsMix
   
   
   HOST = 'api.statsmix.com'
-  BASE_URI = "http://#{HOST}/api/v2/"
+  BASE_URI = "https://#{HOST}/api/v2/"
   UDP_PORT = 8125
   GEM_VERSION = File.exist?('VERSION') ? File.read('VERSION') : ""
 
