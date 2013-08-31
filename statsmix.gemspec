@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{statsmix}
-  s.version = "1.0.0"
+  s.version = "1.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tom Markiewicz", "Derek Scruggs"]
   s.date = %q{2012-10-19}
   s.description = %q{A Ruby gem for the StatsMix API - http://www.statsmix.com/developers}
-  s.email = ["tmarkiewicz@gmail.com", "me@derekscruggs.com"]
+  s.email = ["dominik@copper.io", "support@copper.io"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
